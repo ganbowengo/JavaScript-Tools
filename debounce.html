@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Debounce</title>
+    <style>
+        #contianer {
+            width: 400px;
+            height: 200px;
+            background: #000;
+            color: aliceblue;
+            text-align: center;
+            line-height: 200px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="contianer"></div>
+    <script>
+        var count = 1;
+        var contianer = document.getElementById('contianer')
+
+        function getUserAction() {
+            console.log(this)
+            this.innerHTML = count++
+        }
+
+        contianer.onmousemove = debounce(getUserAction, 1000)
+
+        // 控制函数执行 ---> 设计模式  --- 代理模式
+        // onmousemove 触发debounce的函数创建了settimeout 如果在1000ms中再次触发debounce 就直接清空上一个settimeout
+        // 开始边界 结束边界
+
+        function debounce(func, wait, immediate) {
+            var timeout
+            return function () {
+                var args = arguments
+                clearInterval(timeout)
+                if (immediate) {
+                    // 等待wait的时间后才能再次触发 func
+                    var current = !timeout
+                    timeout = setTimeout(() => {
+                        timeout = null
+                    }, wait)
+                    if (current) {
+                        func.call(this, args)
+                    }
+                } else {
+                    // 当前的timeout 会被下一次触发的当前函数清空
+                    timeout = setTimeout(() => {
+                        func.call(this, args)
+                    }, wait)
+                }
+            }
+        }
+
+        // 节流 在一个周期只执行一次
+        // immediate = false 无论触发多少次都在wait后调用一次func清空timer 可再次触发setTimeout
+        // immediate = true 首次直接触发func wait之后清空timer可再次触发func
+        function thorttle(func, wait, immediate = false) {
+            var timer
+            return function () {
+                var args = arguments
+                if (!timer) {
+                    immediate && func.apply(this, args)
+                    timer = setTimeout(() => {
+                        !immediate && func.apply(this, args)
+                        clearTimeout(timer)
+                        timer = null
+                    }, wait)
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>
