@@ -61,7 +61,7 @@
         // 节流 在一个周期只执行一次
         // immediate = false 无论触发多少次都在wait后调用一次func清空timer 可再次触发setTimeout
         // immediate = true 首次直接触发func wait之后清空timer可再次触发func
-        function thorttle(func, wait, immediate = false) {
+        function throttle(func, wait, immediate = false) {
             var timer
             return function () {
                 var args = arguments
